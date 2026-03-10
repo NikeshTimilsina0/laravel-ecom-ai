@@ -6,48 +6,77 @@
     <title>@yield('title', 'Vendor Dashboard')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        html, body { height: 100%; margin: 0; }
+        .wrapper { display: flex; min-height: 100vh; flex-direction: column; }
+        .sidebar { min-height: 100vh; width: 240px; flex-shrink: 0; }
+        .content { flex: 1; }
+        .nav-link { padding: 0.75rem 1rem; border-radius: 0.375rem; margin-bottom: 0.25rem; }
+        .nav-link:hover { background-color: rgba(255,255,255,0.1); }
+        .nav-link.active { background-color: rgba(255,255,255,0.2); }
+    </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            @auth
-            <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse show">
-                <div class="position-sticky pt-3">
+    <div class="wrapper">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ route('vendor.dashboard') }}">
+                    <i class="bi bi-shop"></i> Vendor Panel
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ route('vendor.dashboard') }}">Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="d-flex">
+            <nav class="col-md-3 col-lg-2 bg-dark sidebar collapse show" id="sidebar">
+                <div class="pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ route('vendor.dashboard') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
+                            <a class="nav-link text-white {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}" href="{{ route('vendor.dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ route('vendor.products.index') }}">
-                                <i class="bi bi-box"></i> My Products
+                            <a class="nav-link text-white {{ request()->routeIs('vendor.products.*') ? 'active' : '' }}" href="{{ route('vendor.products.index') }}">
+                                <i class="bi bi-box-seam me-2"></i> My Products
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ route('vendor.products.create') }}">
-                                <i class="bi bi-plus-circle"></i> Add Product
+                            <a class="nav-link text-white {{ request()->routeIs('vendor.products.create') ? 'active' : '' }}" href="{{ route('vendor.products.create') }}">
+                                <i class="bi bi-plus-circle me-2"></i> Add Product
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ route('vendor.orders') }}">
-                                <i class="bi bi-cart"></i> My Orders
+                            <a class="nav-link text-white {{ request()->routeIs('vendor.orders') ? 'active' : '' }}" href="{{ route('vendor.orders') }}">
+                                <i class="bi bi-cart-check me-2"></i> My Orders
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="nav-link text-white btn btn-link text-decoration-none">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
-                                </button>
-                            </form>
                         </li>
                     </ul>
                 </div>
             </nav>
-            @endauth
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <main class="col-md-9 ms-sm-auto col-lg-10 p-4 content">
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
